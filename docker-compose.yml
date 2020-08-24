@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  zookeeper:
+    image: "docker.io/bitnami/zookeeper:3-debian-10"
+    ports:
+      - "2181:2181"
+    volumes:
+      - "zookeeper_data:/smart_phone_iot"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - iot_network
+  kafka:
+    image: "docker.io/bitnami/kafka:2-debian-10"
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    volumes:
+      - "kafka_data:/smart_phone_iot"
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://localhost:9093
+      - KAFKA_INTER_BROKER_LISTENER_NAME=CLIENT
+    networks:
+      - iot_network
+    depends_on:
+      - zookeeper
+    links:
+      - zookeeper
+
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
+
+networks:
+  iot_network:
+    driver: bridge
