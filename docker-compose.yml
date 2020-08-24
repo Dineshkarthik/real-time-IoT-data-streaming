@@ -32,6 +32,18 @@ services:
     links:
       - zookeeper
 
+  producer:
+    build:
+      context: ./kafka-producer
+    container_name: kafka-producer
+    restart: always
+    ports:
+      - "5555:5555/udp"
+    networks:
+      - iot_network
+    depends_on:
+      - kafka
+
 volumes:
   zookeeper_data:
     driver: local

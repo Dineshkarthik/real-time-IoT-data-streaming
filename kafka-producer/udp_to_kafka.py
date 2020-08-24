@@ -11,7 +11,7 @@ UDP_PORT = 5555
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
 kafka_producer = KafkaProducer(
-    bootstrap_servers=["localhost:9093"],
+    bootstrap_servers=["kafka:9092"],
     value_serializer=lambda x: json.dumps(x).encode("ascii"),
 )
 
