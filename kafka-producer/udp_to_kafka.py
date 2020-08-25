@@ -18,7 +18,6 @@ kafka_producer = KafkaProducer(
 while True:
     data, addr = sock.recvfrom(1024)
     row = data.decode("utf-8").split(",")
-    print(row)
     payload = {
         "timestamp": datetime.now().isoformat(),
         "sender": addr[0],
@@ -40,4 +39,4 @@ while True:
             float(row[11]),
             float(row[12]),
         )
-    kafka_producer.send("my-topic", payload)
+    kafka_producer.send("smartphone-sensor", payload)

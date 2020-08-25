@@ -3,6 +3,8 @@ version: "3.8"
 services:
   zookeeper:
     image: "docker.io/bitnami/zookeeper:3-debian-10"
+    container_name: zookeeper
+    hostname: zookeeper
     ports:
       - "2181:2181"
     volumes:
@@ -13,6 +15,8 @@ services:
       - iot_network
   kafka:
     image: "docker.io/bitnami/kafka:2-debian-10"
+    container_name: kafka
+    hostname: kafka
     ports:
       - "9092:9092"
       - "9093:9093"
@@ -31,7 +35,6 @@ services:
       - zookeeper
     links:
       - zookeeper
-
   producer:
     build:
       context: ./kafka-producer
@@ -43,6 +46,50 @@ services:
       - iot_network
     depends_on:
       - kafka
+    links:
+      - kafka
+
+  elasticsearch:
+    image: elasticsearch:7.7.0
+    container_name: elasticsearch
+    hostname: elasticsearch
+    environment:
+      - "discovery.type=single-node"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - iot_network
+  kibana:
+    image: kibana:7.7.0
+    container_name: kibana
+    hostname: kibana
+    ports:
+      - "5601:5601"
+    links:
+      - elasticsearch:elasticsearch
+    depends_on:
+      - elasticsearch
+    networks:
+      - iot_network
+  logstash:
+    image: logstash:7.7.0
+    container_name: logstash
+    hostname: logstash
+    ports:
+      - "9600:9600"
+      - "8089:8089"
+    volumes:
+      - ./logstash:/usr/share/logstash/pipeline/
+    links:
+      - elasticsearch:elasticsearch
+      - kafka
+    depends_on:
+      - elasticsearch
+      - kafka
+    networks:
+      - iot_network
+  
 
 volumes:
   zookeeper_data:
