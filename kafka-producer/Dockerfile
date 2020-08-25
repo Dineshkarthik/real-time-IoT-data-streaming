@@ -1,6 +1,6 @@
   FROM python:3.8-slim
 
-LABEL maintainer="Dineshkarthik Raveendran <dineshkarthik.r@gmail.com>"
+LABEL maintainer="Dineshkarthik Raveendran <hello@dineshkarthik.me>"
 
 # App setup
 COPY . /app
